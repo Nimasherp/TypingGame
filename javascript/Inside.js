@@ -14,7 +14,7 @@ function randomPosition(canvas) {
 let stopAnimation = false
 let stop = false
 
-function animation(canvas, ctx, word, speed, x, y,randomXimage, callback) {
+function animation(canvas, ctx, word, speed, x, y,Ximage, callback) {
     const startTime = performance.now()
 
     function animate() {
@@ -23,8 +23,9 @@ function animation(canvas, ctx, word, speed, x, y,randomXimage, callback) {
 
         x += speed
 
-        if (x < randomXimage && !stopAnimation) {
+        if (x < Ximage && !stopAnimation) {
             requestAnimationFrame(animate)
+
         } else {
             const endTime = performance.now()
             const duration = endTime - startTime
@@ -37,9 +38,8 @@ function animation(canvas, ctx, word, speed, x, y,randomXimage, callback) {
     animate()
 }
 
-function randomXimage(canvas){
-    const randomXimage = Math.floor(Math.random() * canvas.width/2) + canvas.width/2
-    console.log(randomXimage)
+function randomXimage(canvas, difficulty){
+    const randomXimage = Math.floor(Math.random() * (canvas.width/2)) + canvas.width/2 
     return randomXimage
 }
 // function shakeText(textzone) {
@@ -54,7 +54,7 @@ function randomXimage(canvas){
 // }
 
 
-function lost(ctx, canvas){
+function lost(ctx, canvas, score){
     ctx.font = '150px Arial'
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     ctx.fillText('TOO SLOW !', (canvas.width - ctx.measureText('TOO SLOW !').width)/2
@@ -62,32 +62,43 @@ function lost(ctx, canvas){
     
 }
 
-
-
-async function main(word_list) {
+async function main(word_list, difficulty) {
     const canvas = document?.querySelector("#game")
         ,ctx = canvas.getContext('2d')
         ,textzone = document?.querySelector("#textzone")
         ,pacman = document?.querySelector("#pacman")
+        ,Score = document?.querySelector('#score')
 
     ctx.font = '40px Arial'
     ctx.fillStyle = 'green'
-    let difficulty = 0
-
+    if(difficulty === 3){
+        ctx.fillStyle = 'red'
+    }
+    
     while(!stop){
         stopAnimation = false
         let word = randomWord(word_list)
             ,y = randomPosition(canvas)
-            ,speed = 5
+            ,speed = 2.25 * difficulty
             ,x = 0
             ,text = ''
             ,textzone_value = ''
-        let Ximage = randomXimage(canvas)
+        let Ximage = randomXimage(canvas, difficulty)
+        Score.innerHTML = ''
+        Score.innerHTML = 'WORDS : ' + score
+        while(y - 75 < 0){
+            y = randomPosition(canvas)
+        }
+        while(Ximage + 75 > canvas.width){
+            Ximage = randomXimage(canvas)
+        }
+
         pacman.style.top = y - 90 +'px'
         pacman.style.left = Ximage + 'px'
         
         pacman.innerHTML = '<img src="image/pacman.gif" height="150px">' 
         
+
 
         const inputInterval = setInterval(() => {
             if(textzone.value !== ''){
@@ -99,6 +110,7 @@ async function main(word_list) {
                 textzone_value = ''
                 if(text === word){
                     stopAnimation = true
+                    score++
                     clearInterval(inputInterval)
                     textzone.value = ''
                 }
@@ -111,11 +123,7 @@ async function main(word_list) {
                 resolve(duration)
             })
         })
-
-    
-
         let time = await DurationPromise
-        time = time/1000
 
         clearInterval(inputInterval)
 
@@ -129,7 +137,11 @@ async function main(word_list) {
     if(stop === false){
         pacman.innerHTML = ''
         lost(ctx, canvas)
-        setTimeout(() => {Menu()}, 5000)
+        gameStarted = false
+        setTimeout(() => {
+            Score.innerHTML = ''
+            Menu(score)
+        }, 3000)
     }
 }
 
