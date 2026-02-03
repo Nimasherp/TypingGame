@@ -1,4 +1,26 @@
 let startTime = null
+let stopAnimation = false
+let stop = false
+
+function resizeCanvas() {
+    const canvas = document?.querySelector("#game")
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight *0.7
+}
+
+window.addEventListener("resize", () => {
+    resizeCanvas()
+
+    if(!gameStarted){ // restart everything
+        Menu()
+    } else {
+        main(wordList, difficulty)
+    }
+})
+
+
+
+
 
 
 function randomWord(word_list) {
@@ -11,8 +33,7 @@ function randomPosition(canvas) {
     return Math.floor(Math.random() * canvas.height)
 }
 
-let stopAnimation = false
-let stop = false
+
 
 function animation(canvas, ctx, word, speed, x, y,Ximage, callback) {
     const startTime = performance.now()
@@ -42,20 +63,10 @@ function randomXimage(canvas, difficulty){
     const randomXimage = Math.floor(Math.random() * (canvas.width/2)) + canvas.width/2 
     return randomXimage
 }
-// function shakeText(textzone) {
-//     let original_value = textzone.value
-//     textzone.value = '  ' + original_value
-//     setTimeout(() => {
-//         textzone = original_value + '  '
-//     }, 1000)
-//     setTimeout(() => {
-//         textzone = original_value
-//     }, 1000)
-// }
 
 
 function lost(ctx, canvas, score){
-    ctx.font = '150px Arial'
+    ctx.font = '2.5vw Arial'
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     ctx.fillText('TOO SLOW !', (canvas.width - ctx.measureText('TOO SLOW !').width)/2
         , canvas.height/2)
@@ -69,7 +80,7 @@ async function main(word_list, difficulty) {
         ,pacman = document?.querySelector("#pacman")
         ,Score = document?.querySelector('#score')
 
-    ctx.font = '40px Arial'
+    ctx.font = '2.5vw Arial'
     ctx.fillStyle = 'green'
     if(difficulty === 3){
         ctx.fillStyle = 'red'
@@ -79,7 +90,7 @@ async function main(word_list, difficulty) {
         stopAnimation = false
         let word = randomWord(word_list)
             ,y = randomPosition(canvas)
-            ,speed = 2.25 * difficulty
+            ,speed = 4 * difficulty
             ,x = 0
             ,text = ''
             ,textzone_value = ''

@@ -29,6 +29,7 @@ function startGame() {
 }
 
 function Menu() {
+    resizeCanvas()    
     const canvas = document?.querySelector("#game"),
         ctx = canvas.getContext('2d'),
         textzone = document?.querySelector("#textzone"),
@@ -36,9 +37,14 @@ function Menu() {
         difficulte = document?.querySelector("#difficulte"),
         Score = document?.querySelector('#score')
 
+    score = 0
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    ctx.font = '150px Arial'
+    ctx.font = '2vw Arial'
     ctx.fillStyle = 'green'
+    instruction.style.color = 'green'
+    difficulte.style.color = 'green'
+    textzone.style.color = 'green'
+    Score.style.color = 'green'
 
     if (difficulty === 3) {
         ctx.fillStyle = 'red'
@@ -72,16 +78,28 @@ function Menu() {
     })
 }
 
+function drawDifficultyMenu(ctx, canvas) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    ctx.font = `${Math.floor(canvas.width * 0.05)}px Arial`
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+
+    ctx.fillStyle = 'green'
+    ctx.fillText('EASY', canvas.width/2, canvas.height* 0.3)
+
+    ctx.fillStyle = 'yellow'
+    ctx.fillText('NORMAL', canvas.width / 2, canvas.height *0.5)
+
+    ctx.fillStyle = 'red'
+    ctx.fillText('HARD', canvas.width / 2, canvas.height *0.7)
+}
+
+
 function changeDifficulty(ctx, canvas, textzone) {
     const instruction2 = document?.querySelector("#instruction2")
-    ctx.font = '100px Arial'
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-    ctx.fillText('EASY', (canvas.width - ctx.measureText('EASY').width) / 2, 200)
-    ctx.fillText('NORMAL', (canvas.width - ctx.measureText('NORMAL').width) / 2, 500)
-    ctx.fillStyle = 'red'
-    ctx.fillText('HARD', (canvas.width - ctx.measureText('HARD').width) / 2, 800)
+    drawDifficultyMenu(ctx, canvas)
     instruction2.innerHTML = "<em>Choose difficulty and press enter</em>"
-    instruction2.style.color = 'white'
+
 
     textzone.addEventListener('keydown', function handleDifficultyChange(event) {
         if (event.key === 'Enter' && (textzone.value === 'EASY' ||
